@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        #overlay {
+            position: fixed;
+            top: 70px;
+            right: 30px;
+            color: white;
+            font-size: 19px;
+            font-weight: bold;
+            text-align: right;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        .overlay-background {
+            background-color: rgba(0, 0, 0, 0.631);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(114, 114, 114, 0.578);
+            border-radius: 8px;
+            padding-top: 10px;
+            padding-left: 10px;
+        }
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 10px;
+        }
+        .text-content > div {
+            margin-bottom: 8px;
+        }
+        .rec {
+            font-size: 19px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .dot {
+            font-size: 19px;
+            margin-right: 5px;
+            position: relative;
+            top: -2px;
+            animation: fade 2s infinite;
+        }
+        @keyframes fade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .axon-logo {
+            width: 90px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <div class="text-content">
+            <div class="rec">REC <span class="dot"> 🔴 </span> AXON BODY 4</div>
+            <div id="playerName">Player Name</div>
+            <div id="timeStamp">11/07/2024 4:19 PM</div>
+        </div>
+        <img src="axonbody_logo.png" class="axon-logo" alt="Axon Logo">
+    </div>
+
+    <script>
+     window.addEventListener('message', (event) => {
+        if (event.data.type === "updateBodycam") {
+            if (event.data.playerName) {
+                document.getElementById("playerName").innerText = event.data.playerName;
+            }
+            if (event.data.timeStamp) {
+                document.getElementById("timeStamp").innerText = event.data.timeStamp;
+            }
+
+            if (typeof event.data.display !== "undefined") {
+                document.getElementById("overlay").style.display = event.data.display ? "flex" : "none";
+            }
+
+            if (typeof event.data.background !== "undefined") {
+                if (event.data.background) {
+                    document.getElementById("overlay").classList.add("overlay-background");
+                } else {
+                    document.getElementById("overlay").classList.remove("overlay-background");
+                }
+            }
+        }
+    });
+
+    function updateTime() {
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const year = now.getFullYear();
+        const hours = now.getHours() % 12 || 12;
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+        const formattedTime = `${month}/${day}/${year} ${hours}:${minutes} ${ampm}`;
+        document.getElementById("timeStamp").innerText = formattedTime;
+    }
+
+    setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
